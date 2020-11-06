@@ -1,12 +1,13 @@
 package com.web.api.controller;
 
 import com.web.api.dto.UserDto;
+import com.web.api.entity.User;
 import com.web.api.service.UserService;
-import com.web.api.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,18 +17,18 @@ public class UserController {
     private final ConversionService mvcConvertionService;
 
     @GetMapping("/users/{id}")
-    public UserDto first(
-            @RequestParam(required = false) String name,
-            @PathVariable Long id
-    ) {
-        User user = userService.getUser(name, id);
+    public UserDto getUser(@PathVariable Long id) {
+        User user = userService.getUser(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return mvcConvertionService.convert(user, UserDto.class);
     }
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto second(@RequestBody UserDto userDto) {
+    public UserDto addUser(@RequestBody UserDto userDto) {
+        User user = mvcConvertionService.convert(userDto, User.class);
+        User createdUser = userService.createUser(user);
 
-        return null;
+        return mvcConvertionService.convert(createdUser, UserDto.class);
     }
 }

@@ -1,9 +1,11 @@
 package com.web.api.repository;
 
-import com.web.api.model.User;
+import com.web.api.entity.User;
+
+import java.util.Optional;
 
 public interface UserRepository {
 
-    User getUser(Long id);
-    User createUser(Long id, String name);
+    Optional<User> getUser(Long id);
+    User createUser(User user);
 }
